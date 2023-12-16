@@ -137,11 +137,11 @@ func TestDay15Task1(t *testing.T) {
 }
 
 func TestDay16Task0(t *testing.T) {
-	ExecuteTest("16", NoSolutionFound, Day16Task0, t)
+	ExecuteTest("16", "6921", Day16Task0, t)
 }
 
 func TestDay16Task1(t *testing.T) {
-	ExecuteTest("16", NoSolutionFound, Day16Task1, t)
+	ExecuteTest("16", "7594", Day16Task1, t)
 }
 
 func TestDay17Task0(t *testing.T) {
