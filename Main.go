@@ -40,7 +40,7 @@ var taskFunctionsMap = map[string]Pair[task, task]{
 }
 
 func main() {
-	day := "17"
+	day := "22"
 
 	fileName := fmt.Sprintf("./resources/Day%s.txt", day)
 

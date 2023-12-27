@@ -62,17 +62,28 @@ func Day18CommonTask3(plan []Day18PlanItem) string {
 		}
 	}
 
-	area := 0
+	minY := math.MaxInt
 
-	for j := range corners {
-		i := j - 1
-		if i == -1 {
-			i = len(corners) - 1
+	for i := range corners {
+		pair := corners[i]
+		if pair.Second < minY {
+			minY = pair.Second
 		}
-		area = area + corners[i].First*corners[j].Second - corners[j].First*corners[i].Second
 	}
 
-	return strconv.Itoa(area / 2)
+	for i := range corners {
+		corners[i].Second = corners[i].Second - minY + 1
+	}
+
+	area := 0
+
+	for i := range corners {
+		j := (i + 1) % len(corners)
+		area = area + (corners[i].First+corners[j].First)*(corners[j].Second-corners[i].Second)
+	}
+	area = area / 2
+
+	return strconv.Itoa(area + stepsLength)
 }
 
 func Day18CommonTask2(plan []Day18PlanItem) string {
