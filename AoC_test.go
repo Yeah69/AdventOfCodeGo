@@ -145,11 +145,11 @@ func TestDay16Task1(t *testing.T) {
 }
 
 func TestDay17Task0(t *testing.T) {
-	ExecuteTest("17", NoSolutionFound, Day17Task0, t)
+	ExecuteTest("17", "886", Day17Task0, t)
 }
 
 func TestDay17Task1(t *testing.T) {
-	ExecuteTest("17", NoSolutionFound, Day17Task1, t)
+	ExecuteTest("17", "1055", Day17Task1, t)
 }
 
 func TestDay18Task0(t *testing.T) {
@@ -165,15 +165,15 @@ func TestDay19Task0(t *testing.T) {
 }
 
 func TestDay19Task1(t *testing.T) {
-	ExecuteTest("19", NoSolutionFound, Day19Task1, t)
+	ExecuteTest("19", "132557544578569", Day19Task1, t)
 }
 
 func TestDay20Task0(t *testing.T) {
-	ExecuteTest("20", "432434", Day20Task0, t)
+	ExecuteTest("20", NoSolutionFound, Day20Task0, t)
 }
 
 func TestDay20Task1(t *testing.T) {
-	ExecuteTest("20", "132557544578569", Day20Task1, t)
+	ExecuteTest("20", NoSolutionFound, Day20Task1, t)
 }
 
 func TestDay21Task0(t *testing.T) {
