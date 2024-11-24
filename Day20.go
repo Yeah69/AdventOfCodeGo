@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 	"strconv"
 	"strings"
 )
@@ -140,6 +141,28 @@ func Day20Task0(input string) string {
 func Day20Task1(input string) string {
 	modulesMap := Day20ParseInput(input)
 
+	rxTrigger := ""
+	for current := range modulesMap {
+		module := modulesMap[current]
+		if slices.Contains(module.Next, "rx") {
+			rxTrigger = current
+		}
+	}
+
+	rxTriggerTriggers := make([]string, 0)
+	for current := range modulesMap {
+		module := modulesMap[current]
+		if slices.Contains(module.Next, rxTrigger) {
+			rxTriggerTriggers = append(rxTriggerTriggers, current)
+		}
+	}
+
+	triggerTriggersCycleCounts := make(map[string]int)
+
+	for i := range rxTriggerTriggers {
+		triggerTriggersCycleCounts[rxTriggerTriggers[i]] = -1
+	}
+
 	flipFlopOnStateMap := make(map[string]bool)
 	conjunctionMemoryMap := make(map[string]map[string]bool)
 
@@ -162,12 +185,8 @@ func Day20Task1(input string) string {
 		}
 	}
 
-	lowPulseCount := 0
-	highPulseCount := 0
-
-	for i := 0; i < 100000; i++ {
-		fmt.Printf("click := %d", i+1)
-		fmt.Println()
+	i := 0
+	for {
 		queue := make([]Pair[Day20Module, bool], 0)
 		queue = append(queue, Pair[Day20Module, bool]{modulesMap["button"], false})
 		for len(queue) > 0 {
@@ -180,11 +199,6 @@ func Day20Task1(input string) string {
 				origin := currentModule.Label
 				for i2 := range currentModule.Next {
 					target := currentModule.Next[i2]
-					if pulse {
-						highPulseCount++
-					} else {
-						lowPulseCount++
-					}
 					if module, ok := modulesMap[target]; ok {
 						queue = append(queue, Pair[Day20Module, bool]{module, pulse})
 						if module.Type == 1 {
@@ -211,9 +225,17 @@ func Day20Task1(input string) string {
 					sendPulses(sendingPulse)
 				}
 			} else if currentModule.Type == 1 {
-				if currentModule.Label == "cs" {
-					fmt.Println(conjunctionMemoryMap["cs"])
+				if currentModule.Label == rxTrigger {
+					if rxTriggerConjunction, ok := conjunctionMemoryMap[rxTrigger]; ok {
+						for rxTriggerTrigger := range rxTriggerConjunction {
+							rxTriggerTriggerPulse := rxTriggerConjunction[rxTriggerTrigger]
+							if rxTriggerTriggerPulse && triggerTriggersCycleCounts[rxTriggerTrigger] == -1 {
+								triggerTriggersCycleCounts[rxTriggerTrigger] = i + 1
+							}
+						}
+					}
 				}
+
 				sendingPulse := true
 				if memoryMap, ok := conjunctionMemoryMap[currentModule.Label]; ok {
 					for _, memorizedPulse := range memoryMap {
@@ -230,7 +252,47 @@ func Day20Task1(input string) string {
 				sendPulses(false)
 			}
 		}
+		i++
+		/*if rxTriggerConjunction, ok := conjunctionMemoryMap[rxTrigger]; ok {
+			for rxTriggerTrigger := range rxTriggerConjunction {
+				rxTriggerTriggerPulse := rxTriggerConjunction[rxTriggerTrigger]
+				if rxTriggerTriggerPulse && triggerTriggersCycleCounts[rxTriggerTrigger] == -1 {
+					triggerTriggersCycleCounts[rxTriggerTrigger] = i
+				}
+			}
+		}*/
+		abort := true
+		for s := range triggerTriggersCycleCounts {
+			if triggerTriggersCycleCounts[s] == -1 {
+				abort = false
+			}
+		}
+		if abort {
+			break
+		}
 	}
 
-	return strconv.Itoa(lowPulseCount * highPulseCount)
+	ret := 1
+	for s := range triggerTriggersCycleCounts {
+		ret *= triggerTriggersCycleCounts[s]
+	}
+
+	connections := make([]string, 0)
+	for current := range modulesMap {
+		module := modulesMap[current]
+		for i := range module.Next {
+			next := module.Next[i]
+			label := ""
+			if module.Type == 0 {
+				label = fmt.Sprintf(" [label=\"%s\"]", "%")
+			} else if module.Type == 1 {
+				label = fmt.Sprintf(" [label=\"%s\"]", "&")
+			}
+			connections = append(connections, fmt.Sprintf("    %s -> %s%s", current, next, label))
+		}
+	}
+
+	_ = fmt.Sprintf("digraph {\n%s\n}", strings.Join(connections, "\n"))
+
+	return strconv.Itoa(ret)
 }
